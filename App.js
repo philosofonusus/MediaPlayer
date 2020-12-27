@@ -1,7 +1,7 @@
-import React, {useState, useCallback, useRef} from 'react';
+import React, {useState, useCallback, useRef, useEffect} from 'react';
 import { StyleSheet, Text, FlatList, Image, View, Dimensions, TouchableOpacity} from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import TrackPlayer from "react-native-track-player";
+import TrackPlayer, {STATE_PLAYING} from "react-native-track-player";
 import {songs} from './temp_songs'
 
 const {width} = Dimensions.get('window')
@@ -10,20 +10,25 @@ export default function App() {
   const flatList = useRef()
   const [playing, setPlaying] = useState(false)
   const [current, setCurrent] = useState([{item: {...songs[0]}}])
-  TrackPlayer.setupPlayer().then(() => TrackPlayer.add(current[0].item))
-  const setCurrentFromLayout = useRef(useCallback( ({viewableItems}) => {
-    TrackPlayer.reset()
+  useEffect(() => {
+    (async () => {
+      await TrackPlayer.setupPlayer().then(() => console.log('player ready'))
+      await TrackPlayer.add([current[0].item])
+    })()
+  }, [])
+  const setCurrentFromLayout = useRef(useCallback( async ({viewableItems}) => {
+    await TrackPlayer.reset()
     setPlaying(false)
     setCurrent(viewableItems)
-    return TrackPlayer.add(current[0].item)
+    await TrackPlayer.add([current[0].item])
   }, []))
-  const play = () => {
+  const play = async () => {
     setPlaying(true)
-    TrackPlayer.play()
+    await TrackPlayer.play()
   }
-  const pause = () => {
+  const pause = async () => {
     setPlaying(false)
-    TrackPlayer.pause()
+    await TrackPlayer.pause()
   }
   const  viewableSettings = useRef({itemVisiblePercentThreshold: 50})
   const renderItem = el => {
