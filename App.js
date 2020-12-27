@@ -1,19 +1,30 @@
 import React, {useState, useCallback, useRef} from 'react';
 import { StyleSheet, Text, FlatList, Image, View, Dimensions, TouchableOpacity} from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
+import TrackPlayer from "react-native-track-player";
 import {songs} from './temp_songs'
 
 const {width} = Dimensions.get('window')
 
 export default function App() {
   const flatList = useRef()
+  const [playing, setPlaying] = useState(false)
   const [current, setCurrent] = useState([{item: {...songs[0]}}])
-
-  const setCurrentFromLayout = useRef(useCallback(({viewableItems}) => {
-    console.log(viewableItems)
-    return setCurrent(viewableItems)
+  TrackPlayer.setupPlayer().then(() => TrackPlayer.add(current[0].item))
+  const setCurrentFromLayout = useRef(useCallback( ({viewableItems}) => {
+    TrackPlayer.reset()
+    setPlaying(false)
+    setCurrent(viewableItems)
+    return TrackPlayer.add(current[0].item)
   }, []))
-
+  const play = () => {
+    setPlaying(true)
+    TrackPlayer.play()
+  }
+  const pause = () => {
+    setPlaying(false)
+    TrackPlayer.pause()
+  }
   const  viewableSettings = useRef({itemVisiblePercentThreshold: 50})
   const renderItem = el => {
     return (
@@ -49,9 +60,15 @@ export default function App() {
         <TouchableOpacity onPress={() => flatList.current.scrollToIndex({index: +current[0].item.id === 0 ? current[0].item.id : +current[0].item.id - 1})}>
           <Ionicons name="play-skip-back" size={32} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => console.log('play')}>
-          <Ionicons name="play" size={32} color="white" />
-        </TouchableOpacity>
+        {!playing ?
+            <TouchableOpacity onPress={() => play()}>
+              <Ionicons name="play" size={32} color="white"/>
+            </TouchableOpacity>
+            :
+            <TouchableOpacity onPress={() => pause()}>
+              <Ionicons name="pause" size={32} color="white"/>
+            </TouchableOpacity>
+        }
         <TouchableOpacity onPress={() => flatList.current.scrollToIndex({index: +current[0].item.id === +songs[songs.length - 1].id ? current[0].item.id : +current[0].item.id + 1})}>
           <Ionicons name="play-skip-forward" size={32} color="white" />
         </TouchableOpacity>
