@@ -1,7 +1,7 @@
 import React, {useState, useCallback, useRef, useEffect} from 'react';
 import { StyleSheet, Text, FlatList, Image, View, Dimensions, TouchableOpacity} from 'react-native';
 import Ionicons from "react-native-vector-icons/Ionicons";
-import TrackPlayer, {STATE_PLAYING} from "react-native-track-player";
+import TrackPlayer, {useTrackPlayerProgress} from "react-native-track-player";
 import {songs} from './temp_songs'
 
 const {width} = Dimensions.get('window')
@@ -22,6 +22,7 @@ export default function App() {
     setCurrent(viewableItems)
     await TrackPlayer.add([current[0].item])
   }, []))
+  const {position, duration} = useTrackPlayerProgress()
   const play = async () => {
     setPlaying(true)
     await TrackPlayer.play()
