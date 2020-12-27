@@ -1,0 +1,12 @@
+{
+  "name": "media_player",
+  "displayName": "media_player",
+  "expo": {
+    "name": "media_player",
+    "slug": "media_player",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
